@@ -55,10 +55,16 @@ minio_server_opts: ""
 minio_root_username: "root"
 minio_root_password: "efXsD0RceQnn"
 
+#webhook
+minio_audit_webhook: "http://10.122.145.222:8080"
+minio_audit_webhook_token: "miniowebhook"
+minio_log_webhook: "http://10.122.145.222:8088"
+minio_log_webhook_token: "miniowebhook"
+
 # Switches to enable/disable the MinIO server and/or MinIO client installation.
-minio_install_server: true
+minio_install_server: false
 minio_install_client: true
-minio_init_server: true
+minio_init_server: false
 minio_server_make_fs: false
 
 # TODO: in future

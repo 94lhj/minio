@@ -7,3 +7,6 @@
 
 - include_tasks: install-client.yml
   when: minio_install_client
+
+- include_tasks: config-cluster.yml
+  when: minio_install_client

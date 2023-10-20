@@ -27,7 +27,3 @@
   retries: 5
   delay: 2
 
-- name: mc alias set local
-  shell: "mc alias set local http://{{ item.key }}:9000  root efXsD0RceQnn"
-  when:  item.key  == ansible_default_ipv4.address
-  with_dict: "{{ hostname }}"

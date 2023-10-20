@@ -1,0 +1,12 @@
+- name: mc alias set local
+  shell: "mc alias set local http://{{ item.key }}:9000  {{ minio_root_username }} {{ minio_root_password }} "
+  when:  item.key  == ansible_default_ipv4.address
+  with_dict: "{{ hostname }}"
+
+- name: config  audit  webhook
+  shell: "mc admin config set local audit_webhook endpoint={{ minio_audit_webhook }} auth_token={{ minio_audit_webhook_token }}"
+  when:  ansible_hostname == "node1"
+
+- name: config  log  webhook
+  shell: "mc admin config set local logger_webhook endpoint={{ minio_log_webhook }} auth_token={{ minio_log_webhook_token }}"
+  when:  ansible_hostname == "node1"
