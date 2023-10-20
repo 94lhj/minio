@@ -14,7 +14,7 @@
 
 - name: Check MinIO WebUI
   uri:
-    url: "{{ minio_connection_type }}://{{ minio_hostname }}:{{ minio_server_port }}/minio/login"
+    url: "{{ minio_connection_type }}://{{ minio_hostname }}:9000/minio/login"
     status_code: 200
     headers:
       User-Agent: "Mozilla/5.0"

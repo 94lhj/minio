@@ -1,0 +1,98 @@
+---
+
+- name: Get disk information
+  shell: lsblk -l --output NAME,SIZE -n | grep G
+  register: disk_info
+
+- name: Print disk information
+  debug:
+    var: disk_info.stdout_lines
+
+- name: disabled selinux
+  lineinfile:
+    path: /etc/selinux/config
+    regex: '^SELINUX='
+    line: 'SELINUX=disabled'
+
+- name: stop selinux
+  shell: "setenforce 0"
+  ignore_errors: yes
+
+- name: stop firewalld
+  service:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: set_timezone
+  timezone:
+    name: Asia/Shanghai
+
+- name: Install yum package
+  yum:
+    name:
+      - vim
+      - ntpdate
+      - wget
+    state: present
+  ignore_errors: yes
+
+- name: ntpdate date
+  cron:
+    name: "ntpdate"
+    job: "ntpdate cn.pool.ntp.org"
+    minute: "*/30"
+
+- name: ntpdate time
+  shell: "ntpdate cn.pool.ntp.org"
+
+- name: set hostname
+  hostname:
+    name: "{{ item.value }}"
+  when:  item.key  == ansible_default_ipv4.address
+  with_dict: "{{ hostname }}"
+
+- name: set /etc/hosts
+  lineinfile:
+      path: /etc/hosts
+      line: "{{ item.key }} {{ item.value }}"
+  with_dict: "{{ hostname }}"
+
+- name: Create Minio group
+  group:
+    name: "{{ minio_group }}"
+    state: present
+
+- name: Create Minio user
+  user:
+    name: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+    system: "yes"
+    shell: "/usr/sbin/nologin"
+
+- name: make xfs fs
+  shell: "mkfs.xfs -f {{ item.split('_')[0] }} -L {{ item.split('_')[0].split('/')[-1] }} "
+  when: minio_server_make_fs
+  with_items: "{{ minio_server_datadirs }}"
+
+- name: auto-mount config in /etc/fstab
+  lineinfile:
+    line: "LABEL={{ item.split('_')[0].split('/')[-1] }} {{ item.split('_')[-1] }} xfs defaults,noatime 0 2"
+    state: present
+    path: /etc/fstab
+  when: minio_server_make_fs
+  with_items: "{{ minio_server_datadirs }}"
+
+- name: Create dir
+  file:
+    path: "{{ item.split('_')[-1] }}"
+    state: directory
+    owner: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+    mode: 0750
+  when: minio_server_make_fs
+  with_items: "{{ minio_server_datadirs }}"
+
+- name: mount datadir
+  shell: "mount -a"
+  when: minio_server_make_fs

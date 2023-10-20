@@ -23,28 +23,6 @@
     minio_server_opts: "--config-dir {{ minio_config_dir }} {{ minio_server_opts }}"
   when: minio_config_dir | length > 0
 
-- name: Create MinIO group
-  group:
-    name: "{{ minio_group }}"
-    state: present
-
-- name: Create MinIO user
-  user:
-    name: "{{ minio_user }}"
-    group: "{{ minio_group }}"
-    system: "yes"
-    shell: "/usr/sbin/nologin"
-
-- name: Create the MinIO data storage directories
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ minio_user }}"
-    group: "{{ minio_group }}"
-    mode: 0755
-  when: minio_server_make_datadirs
-  with_items: "{{ minio_server_datadirs }}"
-
 - name: Download the MinIO server
   get_url:
     url: "{{ _minio_server_download_url }}"
