@@ -1,0 +1,37 @@
+---
+
+- name: copy webhook file
+  copy:
+    src: "files/webhook"
+    dest: "/usr/local/bin/webhook"
+    owner: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+    mode: 0740
+  notify:
+    - restart webhook-audit
+    - restart webhook-log
+  when:  ansible_hostname == "node1"
+
+- name: Create the webhook-audit server systemd config
+  template:
+    src: webhook-audit.service.j2
+    dest: "/etc/systemd/system/webhook-audit.service"
+    owner: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+    mode: 0644
+  when:  ansible_hostname == "node1"
+  notify:
+    - reload webhook-audit systemd
+    - restart webhook-audit
+
+- name: Create the webhook-log server systemd config
+  template:
+    src: webhook-log.service.j2
+    dest: "/etc/systemd/system/webhook-log.service"
+    owner: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+    mode: 0644
+  when:  ansible_hostname == "node1"
+  notify:
+    - reload webhook-log systemd
+    - restart webhook-log

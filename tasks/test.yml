@@ -1,0 +1,10 @@
+- name: Get disk information
+  shell: lsblk -l --output NAME,SIZE -n | grep 32G
+  register: disk_info
+
+- name: Print disk information
+  debug:
+    msg: "{{ item.0.split(' ')[0] }}  {{ item.1 }}"
+  with_together:
+    - "{{ disk_info.stdout_lines }}"
+    - [ 'disk1', 'disk2', 'disk3','disk4' ]

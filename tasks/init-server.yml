@@ -1,22 +1,22 @@
 ---
 
 - name: Get disk information
-  shell: lsblk -l --output NAME,SIZE -n | grep G
+  shell: lsblk -l --output NAME,SIZE -n | grep 12.8T
   register: disk_info
 
 - name: Print disk information
   debug:
     var: disk_info.stdout_lines
 
+- name: stop selinux
+  shell: "setenforce 0"
+  ignore_errors: yes
+
 - name: disabled selinux
   lineinfile:
     path: /etc/selinux/config
     regex: '^SELINUX='
     line: 'SELINUX=disabled'
-
-- name: stop selinux
-  shell: "setenforce 0"
-  ignore_errors: yes
 
 - name: stop firewalld
   service:
@@ -71,21 +71,24 @@
     shell: "/usr/sbin/nologin"
 
 - name: make xfs fs
-  shell: "mkfs.xfs -f {{ item.split('_')[0] }} -L {{ item.split('_')[0].split('/')[-1] }} "
+  shell: "mkfs.xfs -f /dev/{{ item.0.split(' ')[0] }}  -L {{ item.1 }} "
   when: minio_server_make_fs
-  with_items: "{{ minio_server_datadirs }}"
+  with_together:
+    - "{{ disk_info.stdout_lines }}"
+    - "{{ minio_server_datadirs }}"
 
 - name: auto-mount config in /etc/fstab
   lineinfile:
-    line: "LABEL={{ item.split('_')[0].split('/')[-1] }} {{ item.split('_')[-1] }} xfs defaults,noatime 0 2"
+    line: "LABEL={{ item }} /mnt/{{ item }} xfs defaults,noatime 0 2"
     state: present
     path: /etc/fstab
   when: minio_server_make_fs
-  with_items: "{{ minio_server_datadirs }}"
+  with_items:
+    - "{{ minio_server_datadirs }}"
 
 - name: Create dir
   file:
-    path: "{{ item.split('_')[-1] }}"
+    path: "/mnt/{{ item }}"
     state: directory
     owner: "{{ minio_user }}"
     group: "{{ minio_group }}"
@@ -96,3 +99,13 @@
 - name: mount datadir
   shell: "mount -a"
   when: minio_server_make_fs
+
+- name: chown
+  file:
+    path: "/mnt/{{ item }}"
+    state: directory
+    owner: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+  when: minio_server_make_fs
+  with_items: "{{ minio_server_datadirs }}"
+

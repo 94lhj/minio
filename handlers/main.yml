@@ -23,3 +23,23 @@
   until: login_page.status == 200
   retries: 10
   delay: 1
+
+- name: reload webhook-audit systemd
+  systemd:
+    name: webhook-audit
+    daemon_reload: True
+
+- name: restart webhook-audit
+  service:
+    name: webhook-audit
+    state: restarted
+
+- name: reload webhook-log systemd
+  systemd:
+    name: webhook-log
+    daemon_reload: True
+
+- name: restart webhook-log
+  service:
+    name: webhook-log
+    state: restarted

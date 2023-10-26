@@ -1,0 +1,13 @@
+[all:vars]
+ansible_ssh_user=root
+#ansible_ssh_pass=datahome2020
+ansible_ssh_pass=DataHome2020!!!
+
+[minio]
+10.122.145.23
+10.122.145.24
+10.122.145.25
+10.122.145.26
+
+[webhook]
+10.122.145.222

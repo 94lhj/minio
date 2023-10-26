@@ -1,0 +1,8 @@
+[Unit]
+Description=MinIO Audit/Logger Webhook
+
+[Service]
+Environment="WEBHOOK_AUTH_TOKEN={{ minio_log_webhook_token }}"
+Type=simple
+ExecStart=/usr/local/bin/webhook --log-file /var/log/minio-audit.log --address :8080
+Restart=always

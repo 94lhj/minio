@@ -1,26 +1,24 @@
 ---
+#定义主机名
 hostname:
-  10.122.145.227: node1.minio.local
-  10.122.145.220: node2.minio.local
-  10.122.145.221: node3.minio.local
-  10.122.145.222: node4.minio.local
+  10.122.145.26: node1.minio.test
+  10.122.145.25: node2.minio.test
+  10.122.145.24: node3.minio.test
+  10.122.145.23: node4.minio.test
 
-# MinIO binaries path
+# MinIO 安装位置
 minio_server_bin: /usr/local/bin/minio
 minio_client_bin: /usr/local/bin/mc
 
 minio_hostname: "{{ ansible_fqdn }}"
 
-# MinIO release to install.
+# MinIO 安装版本
 minio_server_release: "RELEASE.2023-10-16T04-13-43Z"
 minio_client_release: "RELEASE.2023-10-14T01-57-03Z"
 
-# Runtime user and group for the MinIO server service
+# 程序运行用户
 minio_user: minio
 minio_group: minio
-
-# Path to the file containing the ENV variables for the MinIO server
-minio_server_envfile: /etc/default/minio
 
 # Directory to store minio config. Will default to minio_user/.minio if not defined
 minio_config_dir: "/etc/minio"
@@ -31,41 +29,53 @@ minio_console_addr: ":9001"
 
 # MinIO server data directories
 minio_server_datadirs:
-  - /dev/sdb_/mnt/disk1
-  - /dev/sdc_/mnt/disk2
-  - /dev/sdd_/mnt/disk3
-  - /dev/sde_/mnt/disk4
+  - disk1
+  - disk2
+  - disk3
+  - disk4
+  - disk5
+  - disk6
+  - disk7
+  - disk8
+  - disk9
+  - disk10
+  - disk11
+  - disk12
 
-# MinIO server args list.
+# MinIO 服务池
 minio_server_args:
-  - 'http://node{1...4}.minio.local/mnt/disk{1...4}'
+  - 'http://node{1...4}.minio.test/mnt/disk{1...12}'
 
-# Additional environment variables to be set in minio server environment
+# MinIO 环境变量配置文件位置
+minio_server_envfile: /etc/default/minio
+# 其他环境变量配置项
 minio_server_env_extra: |
   MINIO_SITE_REGION="us-5"
   MINIO_STORAGE_CLASS_STANDARD=EC:2
   MINIO_STORAGE_CLASS_RRS=EC:1
   MINIO_PROMETHEUS_AUTH_TYPE=public
+  MINIO_PROMETHEUS_URL=http://10.122.145.211:18481/select/1/prometheus
+  MINIO_PROMETHEUS_JOB_ID=minio
 
 # Additional MinIO server CLI options
 minio_server_opts: ""
 
-# MinIO root username password
-# Reading existing values from deprecated access and secret key varibles
+# MinIO 管理员用户名密码
 minio_root_username: "root"
 minio_root_password: "efXsD0RceQnn"
 
-#webhook
-minio_audit_webhook: "http://10.122.145.222:8080"
+#审计日志和服务日志 webhook
+minio_audit_webhook: "http://node1.minio.test:8080"
 minio_audit_webhook_token: "miniowebhook"
-minio_log_webhook: "http://10.122.145.222:8088"
+minio_log_webhook: "http://node1.minio.test:8081"
 minio_log_webhook_token: "miniowebhook"
 
 # Switches to enable/disable the MinIO server and/or MinIO client installation.
-minio_install_server: false
-minio_install_client: true
 minio_init_server: false
 minio_server_make_fs: false
+minio_install_server: true
+minio_install_client: true
+minio_install_webhook: true
 
-# TODO: in future
+
 minio_enable_ssl: false
