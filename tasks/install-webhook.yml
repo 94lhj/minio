@@ -35,3 +35,15 @@
   notify:
     - reload webhook-log systemd
     - restart webhook-log
+
+- name: Enable and start the webhook-log service
+  service:
+    name: webhook-log
+    enabled: true
+    state: started
+
+- name: Enable and start the webhook-audit service
+  service:
+    name: webhook-audit
+    enabled: true
+    state: started
