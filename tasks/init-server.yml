@@ -1,7 +1,7 @@
 ---
 
 - name: Get disk information
-  shell: lsblk -l --output NAME,SIZE -n | grep 12.8T
+  shell: lsblk -l --output NAME,SIZE -n | grep 32G
   register: disk_info
 
 - name: Print disk information
@@ -17,40 +17,40 @@
     path: /etc/selinux/config
     regex: '^SELINUX='
     line: 'SELINUX=disabled'
+  ignore_errors: yes
 
 - name: stop firewalld
   service:
     name: firewalld
     state: stopped
     enabled: no
+  ignore_errors: yes
 
 - name: set_timezone
   timezone:
     name: Asia/Shanghai
 
-- name: Install yum package
-  yum:
+- name: Install  package
+  apt:
     name:
-      - vim
-      - ntpdate
       - wget
     state: present
   ignore_errors: yes
 
-- name: ntpdate date
-  cron:
-    name: "ntpdate"
-    job: "ntpdate cn.pool.ntp.org"
-    minute: "*/30"
+#- name: ntpdate date
+#  cron:
+#    name: "ntpdate"
+#    job: "ntpdate cn.pool.ntp.org"
+#    minute: "*/30"
 
-- name: ntpdate time
-  shell: "ntpdate cn.pool.ntp.org"
+#- name: ntpdate time
+#  shell: "ntpdate cn.pool.ntp.org"
 
-- name: set hostname
-  hostname:
-    name: "{{ item.value }}"
-  when:  item.key  == ansible_default_ipv4.address
-  with_dict: "{{ hostname }}"
+#- name: set hostname
+#  hostname:
+#    name: "{{ item.value }}"
+#  when:  item.key  == ansible_default_ipv4.address
+#  with_dict: "{{ hostname }}"
 
 - name: set /etc/hosts
   lineinfile:

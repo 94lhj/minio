@@ -1,10 +1,10 @@
 ---
 #定义主机名
 hostname:
-  10.122.145.26: node1.minio.test
-  10.122.145.25: node2.minio.test
-  10.122.145.24: node3.minio.test
-  10.122.145.23: node4.minio.test
+  10.122.129.99: node1.minio.icool
+  10.122.129.77: node2.minio.icool
+  10.122.129.82: node3.minio.icool
+  10.122.129.83: node4.minio.icool
 
 # MinIO 安装位置
 minio_server_bin: /usr/local/bin/minio
@@ -13,8 +13,8 @@ minio_client_bin: /usr/local/bin/mc
 minio_hostname: "{{ ansible_fqdn }}"
 
 # MinIO 安装版本
-minio_server_release: "RELEASE.2023-10-16T04-13-43Z"
-minio_client_release: "RELEASE.2023-10-14T01-57-03Z"
+minio_server_release: "RELEASE.2023-12-07T04-16-00Z"
+minio_client_release: "RELEASE.2023-12-02T11-24-10Z"
 
 # 程序运行用户
 minio_user: minio
@@ -33,49 +33,40 @@ minio_server_datadirs:
   - disk2
   - disk3
   - disk4
-  - disk5
-  - disk6
-  - disk7
-  - disk8
-  - disk9
-  - disk10
-  - disk11
-  - disk12
 
 # MinIO 服务池
 minio_server_args:
-  - 'http://node{1...4}.minio.test/mnt/disk{1...12}'
+  - 'http://node{1...4}.minio.icool/mnt/disk{1...4}'
 
 # MinIO 环境变量配置文件位置
 minio_server_envfile: /etc/default/minio
 # 其他环境变量配置项
 minio_server_env_extra: |
   MINIO_SITE_REGION="us-5"
-  MINIO_STORAGE_CLASS_STANDARD=EC:2
+  MINIO_STORAGE_CLASS_STANDARD=EC:4
   MINIO_STORAGE_CLASS_RRS=EC:1
   MINIO_PROMETHEUS_AUTH_TYPE=public
-  MINIO_PROMETHEUS_URL=http://10.122.145.211:18481/select/1/prometheus
-  MINIO_PROMETHEUS_JOB_ID=minio
+#MINIO_PROMETHEUS_URL=http://10.122.145.211:18481/select/1/prometheus
+#MINIO_PROMETHEUS_JOB_ID=minio
 
 # Additional MinIO server CLI options
 minio_server_opts: ""
 
 # MinIO 管理员用户名密码
-minio_root_username: "root"
-minio_root_password: "efXsD0RceQnn"
+minio_root_username: "icool"
+minio_root_password: "PSYCso11TMCxEWiA"
 
 #审计日志和服务日志 webhook
-minio_audit_webhook: "http://node1.minio.test:8080"
+minio_audit_webhook: "http://node1.minio.icool:8080"
 minio_audit_webhook_token: "miniowebhook"
-minio_log_webhook: "http://node1.minio.test:8081"
+minio_log_webhook: "http://node1.minio.icool:8081"
 minio_log_webhook_token: "miniowebhook"
 
 # Switches to enable/disable the MinIO server and/or MinIO client installation.
-minio_init_server: false
-minio_server_make_fs: false
+minio_init_server: true
+minio_server_make_fs: true
 minio_install_server: true
 minio_install_client: true
 minio_install_webhook: true
-
 
 minio_enable_ssl: false
