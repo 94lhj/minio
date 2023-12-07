@@ -10,7 +10,8 @@
   notify:
     - restart webhook-audit
     - restart webhook-log
-  when:  ansible_hostname == "node1"
+# 设置为节点的hostname,如果没开启修改主机名，需要手动修改
+  when:  ansible_hostname == "DCZ-2007FC107U34-L17-A05"
 
 - name: Create the webhook-audit server systemd config
   template:

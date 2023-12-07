@@ -1,7 +1,7 @@
 ---
 
 - name: Get disk information
-  shell: lsblk -l --output NAME,SIZE -n | grep 32G
+  shell: lsblk -l --output NAME,SIZE -n | grep 5.8T
   register: disk_info
 
 - name: Print disk information
